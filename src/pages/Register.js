@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Logo, FormRow, Alert } from '../components'
 import Wrapper from '../assets/wrappers/RegisterPage'
+import { useAppContext } from '../context/appContext'
 
 // Initial State
 const initialState = {
@@ -8,25 +9,31 @@ const initialState = {
   email: '',
   password: '',
   isMember: true,
-  showAlert: false
 }
 
 const Register = () => {
   const [values, setValues] = useState(initialState)
+  const { isLoading, showAlert, displayAlert } = useAppContext()
 
 
   const toggleMember = () => {
     setValues({ ...values, isMember: !values.isMember })
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log(e.target)
+  const handleChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value })
   }
 
-  const handleChange = (e) => {
-    console.log(e.target, e.target.value)
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const { name, email, password, isMember } = values
+    if (!email || !password || (!isMember && !name)) {
+      displayAlert()
+      return
+    }
+    console.log(values)
   }
+
 
   return (
     <Wrapper className='full-page'>
@@ -34,7 +41,7 @@ const Register = () => {
         <Logo />
         <h3>{values.isMember ? 'login' : 'register'}</h3>
         {/* alert */}
-        {values.showAlert && <Alert text='Alert' type='danger' />}
+        {showAlert && <Alert />}
         {/* name input */}
         {!values.isMember && <FormRow handleChage={handleChange} name='name' type='text' value={values.name} />}
         {/* email input */}

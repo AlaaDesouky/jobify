@@ -5,7 +5,9 @@ import {
   DISPLAY_ALERT,
   SET_USER_BEGIN,
   SET_USER_ERROR,
-  SET_USER_SUCCESS
+  SET_USER_SUCCESS,
+  LOGOUT_USER,
+  TOGGLE_SIDEBAR
 } from './actions'
 import reducer from './reducer'
 
@@ -19,6 +21,7 @@ const initialState = {
   showAlert: false,
   alertText: '',
   alertType: '',
+  showSidebar: false,
   user: user ? JSON.parse(user) : null,
   token: token || null,
   userLocation: userLocation || '',
@@ -68,13 +71,22 @@ const AppProvider = ({ children }) => {
     } catch (error) {
       dispatch({ type: SET_USER_ERROR, payload: { msg: error.response.data.msg } })
     }
-
     clearAlert()
   }
 
+  // Logout User
+  const logoutUser = () => {
+    dispatch({ type: LOGOUT_USER })
+    removeUserFromLocalStorage()
+  }
+
+  // Sidebar
+  const toggleSidebar = () => {
+    dispatch({ type: TOGGLE_SIDEBAR })
+  }
 
   return (
-    <AppContext.Provider value={{ ...state, displayAlert, setUser }}>
+    <AppContext.Provider value={{ ...state, displayAlert, setUser, toggleSidebar, logoutUser }}>
       {children}
     </AppContext.Provider>
   )

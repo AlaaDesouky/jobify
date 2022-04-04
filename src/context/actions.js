@@ -4,3 +4,6 @@ export const CLEAR_ALERT = 'CLEAR_ALERT'
 export const SET_USER_BEGIN = 'SET_USER_BEGIN'
 export const SET_USER_SUCCESS = 'SET_USER_SUCCESS'
 export const SET_USER_ERROR = 'SET_USER_ERROR'
+export const LOGOUT_USER = 'LOGOUT_USER'
+
+export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR'

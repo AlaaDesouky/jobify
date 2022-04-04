@@ -1,6 +1,12 @@
 import { useReducer, useContext, createContext } from 'react'
 import axios from 'axios'
-import { CLEAR_ALERT, DISPLAY_ALERT, REGISTER_USER_BEGIN, REGISTER_USER_ERROR, REGISTER_USER_SUCCESS, LOGIN_USER_BEGIN, LOGIN_USER_ERROR, LOGIN_USER_SUCCESS } from './actions'
+import {
+  CLEAR_ALERT,
+  DISPLAY_ALERT,
+  SET_USER_BEGIN,
+  SET_USER_ERROR,
+  SET_USER_SUCCESS
+} from './actions'
 import reducer from './reducer'
 
 // Set data if exist from local storage
@@ -48,42 +54,27 @@ const AppProvider = ({ children }) => {
     localStorage.removeItem('location')
   }
 
-  // Register users
-  const registerUser = async (currentUser) => {
-    dispatch({ type: REGISTER_USER_BEGIN })
+
+  // Register/Login User
+  const setUser = async ({ currentUser, endPoint, alertText }) => {
+    dispatch({ type: SET_USER_BEGIN })
     try {
-      const response = await axios.post('/api/v1/auth/register', currentUser)
+      const response = await axios.post(`/api/v1/auth/${endPoint}`, currentUser)
       const { user, token, location } = await response.data
-      dispatch({ type: REGISTER_USER_SUCCESS, payload: { user, token, location } })
+      dispatch({ type: SET_USER_SUCCESS, payload: { user, token, location, alertText } })
 
       // add user local storage
       addUserToLocalStorage({ user, token, location })
     } catch (error) {
-      dispatch({ type: REGISTER_USER_ERROR, payload: { msg: error.response.data.msg } })
+      dispatch({ type: SET_USER_ERROR, payload: { msg: error.response.data.msg } })
     }
 
     clearAlert()
   }
 
-  // Login User
-  const loginUser = async (currentUser) => {
-    dispatch({ type: LOGIN_USER_BEGIN })
-    try {
-      const response = await axios.post('/api/v1/auth/login', currentUser)
-      const { user, token, location } = await response.data
-      dispatch({ type: LOGIN_USER_SUCCESS, payload: { user, token, location } })
-
-      // add user local storage
-      addUserToLocalStorage({ user, token, location })
-    } catch (error) {
-      dispatch({ type: LOGIN_USER_ERROR, payload: { msg: error.response.data.msg } })
-    }
-
-    clearAlert()
-  }
 
   return (
-    <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser }}>
+    <AppContext.Provider value={{ ...state, displayAlert, setUser }}>
       {children}
     </AppContext.Provider>
   )

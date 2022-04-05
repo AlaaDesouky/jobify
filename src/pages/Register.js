@@ -59,11 +59,11 @@ const Register = () => {
         {/* alert */}
         {showAlert && <Alert />}
         {/* name input */}
-        {!values.isMember && <FormRow handleChage={handleChange} name='name' type='text' value={values.name} />}
+        {!values.isMember && <FormRow handleChange={handleChange} name='name' type='text' value={values.name} />}
         {/* email input */}
-        <FormRow handleChage={handleChange} name='email' type='email' value={values.email} />
+        <FormRow handleChange={handleChange} name='email' type='email' value={values.email} />
         {/* password input */}
-        <FormRow handleChage={handleChange} name='password' type='password' value={values.password} />
+        <FormRow handleChange={handleChange} name='password' type='password' value={values.password} />
 
         <button className="btn btn-block" type='submit'>
           submit

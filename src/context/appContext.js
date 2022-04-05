@@ -6,6 +6,9 @@ import {
   SET_USER_BEGIN,
   SET_USER_ERROR,
   SET_USER_SUCCESS,
+  UPDATE_USER_BEGIN,
+  UPDATE_USER_ERROR,
+  UPDATE_USER_SUCCESS,
   LOGOUT_USER,
   TOGGLE_SIDEBAR
 } from './actions'
@@ -32,6 +35,31 @@ const AppContext = createContext()
 
 const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)
+
+  // Axios setup
+  const authFetch = axios.create({ baseURL: '/api/v1' })
+  authFetch.interceptors.request.use(
+    (config) => {
+      config.headers.common['Authorization'] = `Bearer ${state.token}`
+      return config
+    },
+    (error) => {
+      return Promise.reject(error)
+    }
+  )
+
+  authFetch.interceptors.response.use(
+    (response) => {
+      return response
+    },
+    (error) => {
+      if (error.response.status === 401) {
+        logoutUser()
+      }
+      return Promise.reject(error)
+    }
+  )
+
 
   // Alert functionality
   const displayAlert = () => {
@@ -74,6 +102,29 @@ const AppProvider = ({ children }) => {
     clearAlert()
   }
 
+  // Update User
+  const updateUser = async (currentUser) => {
+    dispatch({ type: UPDATE_USER_BEGIN })
+    try {
+      const { data } = await authFetch.patch('/auth/updateUser', currentUser)
+      const { user, token, location } = data
+      dispatch({
+        type: UPDATE_USER_SUCCESS,
+        payload: { user, location, token }
+      })
+
+      addUserToLocalStorage({ user, token, location })
+    } catch (error) {
+      if (error.response.status !== 401) {
+        dispatch({
+          type: UPDATE_USER_ERROR,
+          payload: { msg: error.response.data.msg }
+        })
+      }
+    }
+    clearAlert()
+  }
+
   // Logout User
   const logoutUser = () => {
     dispatch({ type: LOGOUT_USER })
@@ -86,7 +137,7 @@ const AppProvider = ({ children }) => {
   }
 
   return (
-    <AppContext.Provider value={{ ...state, displayAlert, setUser, toggleSidebar, logoutUser }}>
+    <AppContext.Provider value={{ ...state, displayAlert, setUser, toggleSidebar, logoutUser, updateUser }}>
       {children}
     </AppContext.Provider>
   )

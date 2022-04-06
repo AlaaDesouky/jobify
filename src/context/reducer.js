@@ -9,7 +9,12 @@ import {
   UPDATE_USER_BEGIN,
   UPDATE_USER_ERROR,
   UPDATE_USER_SUCCESS,
-  TOGGLE_SIDEBAR
+  TOGGLE_SIDEBAR,
+  HANDLE_CHANGE,
+  CLEAR_VALUES,
+  CREATE_JOB_BEGIN,
+  CREATE_JOB_ERROR,
+  CREATE_JOB_SUCCESS
 } from "./actions"
 
 
@@ -98,6 +103,48 @@ const reducer = (state, action) => {
   // SIDEBAR
   if (action.type === TOGGLE_SIDEBAR) {
     return { ...state, showSidebar: !state.showSidebar }
+  }
+
+  // HANDLE CHANGE
+  if (action.type === HANDLE_CHANGE) {
+    return { ...state, [action.payload.name]: action.payload.value }
+  }
+
+  // CLEAR VALUES
+  if (action.type === CLEAR_VALUES) {
+    return {
+      ...state,
+      isEditing: false,
+      editJobId: '',
+      position: '',
+      company: '',
+      jobLocation: state.userLocation,
+      jobType: state.jobTypeOptions[0],
+      status: state.statusOptions[0]
+    }
+  }
+
+  // CREATE JOB
+  if (action.type === CREATE_JOB_BEGIN) {
+    return { ...state, isLoading: true }
+  }
+  if (action.type === CREATE_JOB_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'success',
+      alertText: 'New Job Created!'
+    }
+  }
+  if (action.type === CREATE_JOB_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'danger',
+      alertText: action.payload.msg
+    }
   }
 
   throw new Error(`no such action : ${action.type}`)

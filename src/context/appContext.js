@@ -10,9 +10,15 @@ import {
   UPDATE_USER_ERROR,
   UPDATE_USER_SUCCESS,
   LOGOUT_USER,
-  TOGGLE_SIDEBAR
+  TOGGLE_SIDEBAR,
+  HANDLE_CHANGE,
+  CLEAR_VALUES,
+  CREATE_JOB_BEGIN,
+  CREATE_JOB_SUCCESS,
+  CREATE_JOB_ERROR
 } from './actions'
 import reducer from './reducer'
+import { jobTypeOptions, statusOptions } from '../utils/jobs'
 
 // Set data if exist from local storage
 const user = localStorage.getItem('user')
@@ -28,7 +34,17 @@ const initialState = {
   user: user ? JSON.parse(user) : null,
   token: token || null,
   userLocation: userLocation || '',
-  jobLocation: userLocation || ''
+
+  isEditing: false,
+  editJobId: '',
+  position: '',
+  company: '',
+  jobLocation: userLocation || '',
+  jobTypeOptions,
+  jobType: jobTypeOptions[0],
+  statusOptions,
+  status: statusOptions[0]
+
 }
 
 const AppContext = createContext()
@@ -136,8 +152,56 @@ const AppProvider = ({ children }) => {
     dispatch({ type: TOGGLE_SIDEBAR })
   }
 
+  // Handle Change
+  const handleChange = ({ name, value }) => {
+    dispatch({
+      type: HANDLE_CHANGE,
+      payload: {
+        name, value
+      }
+    })
+  }
+
+  // Clear Values
+  const clearValues = () => {
+    dispatch({ type: CLEAR_VALUES })
+  }
+
+  // Create Job
+  const createJob = async () => {
+    dispatch({ type: CREATE_JOB_BEGIN })
+    try {
+      const { position, company, jobLocation, jobType, status } = state
+      await authFetch.post('/jobs', {
+        company, position, jobLocation, jobType, status
+      })
+      dispatch({ type: CREATE_JOB_SUCCESS })
+      dispatch({ type: CLEAR_VALUES })
+    } catch (error) {
+      if (error.response.status === 401) return
+      dispatch({
+        type: CREATE_JOB_ERROR,
+        payload: { msg: error.response.data.msg }
+      })
+    }
+    clearAlert()
+  }
+
   return (
-    <AppContext.Provider value={{ ...state, displayAlert, setUser, toggleSidebar, logoutUser, updateUser }}>
+    <AppContext.Provider
+      value={{
+        ...state,
+        displayAlert,
+        setUser,
+        toggleSidebar,
+        logoutUser,
+        updateUser,
+        handleChange,
+        clearValues,
+        createJob
+      }}
+    >
+
       {children}
     </AppContext.Provider>
   )

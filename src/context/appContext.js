@@ -1,4 +1,4 @@
-import { useReducer, useContext, createContext } from 'react'
+import { useReducer, useContext, createContext, useEffect } from 'react'
 import axios from 'axios'
 import {
   CLEAR_ALERT,
@@ -15,7 +15,9 @@ import {
   CLEAR_VALUES,
   CREATE_JOB_BEGIN,
   CREATE_JOB_SUCCESS,
-  CREATE_JOB_ERROR
+  CREATE_JOB_ERROR,
+  GET_JOBS_BEGIN,
+  GET_JOBS_SUCCESS
 } from './actions'
 import reducer from './reducer'
 import { jobTypeOptions, statusOptions } from '../utils/jobs'
@@ -43,8 +45,12 @@ const initialState = {
   jobTypeOptions,
   jobType: jobTypeOptions[0],
   statusOptions,
-  status: statusOptions[0]
+  status: statusOptions[0],
 
+  jobs: [],
+  totalJobs: 0,
+  numOfPages: 1,
+  page: 1
 }
 
 const AppContext = createContext()
@@ -187,6 +193,38 @@ const AppProvider = ({ children }) => {
     clearAlert()
   }
 
+  // Get Jobs
+  const getJobs = async () => {
+    let url = '/jobs'
+    dispatch({ type: GET_JOBS_BEGIN })
+
+    try {
+      const { data } = await authFetch(url)
+      const { jobs, totalJobs, numOfPages } = data
+      dispatch({
+        type: GET_JOBS_SUCCESS,
+        payload: {
+          jobs,
+          totalJobs,
+          numOfPages
+        }
+      })
+    } catch (error) {
+      console.log(error.response)
+      logoutUser()
+    }
+    clearAlert()
+  }
+
+  // Edit/Delete Job
+  const setEditJob = (id) => {
+    console.log(`edit job: ${id}`)
+  }
+
+  const deleteJob = (id) => {
+    console.log(`delete job ${id}`)
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -198,7 +236,10 @@ const AppProvider = ({ children }) => {
         updateUser,
         handleChange,
         clearValues,
-        createJob
+        createJob,
+        getJobs,
+        setEditJob,
+        deleteJob
       }}
     >
 

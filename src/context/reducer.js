@@ -24,7 +24,8 @@ import {
   DELETE_JOB_BEGIN,
   SHOW_STATS_BEGIN,
   SHOW_STATS_SUCCESS,
-  CLEAR_FILTERS
+  CLEAR_FILTERS,
+  CHANGE_PAGE
 } from "./actions"
 
 
@@ -117,7 +118,7 @@ const reducer = (state, action) => {
 
   // HANDLE CHANGE
   if (action.type === HANDLE_CHANGE) {
-    return { ...state, [action.payload.name]: action.payload.value }
+    return { ...state, page: 1, [action.payload.name]: action.payload.value }
   }
 
   // CLEAR VALUES
@@ -167,7 +168,7 @@ const reducer = (state, action) => {
       isLoading: false,
       jobs: action.payload.jobs,
       totalJobs: action.payload.totalJobs,
-      numOfPage: action.payload.numOfPage
+      numOfPages: action.payload.numOfPages
     }
   }
 
@@ -234,6 +235,11 @@ const reducer = (state, action) => {
       searchType: 'all',
       sort: state.sortOptions[0]
     }
+  }
+
+  // CHANGE PAGE
+  if (action.type === CHANGE_PAGE) {
+    return { ...state, page: action.payload.page }
   }
 
   throw new Error(`no such action : ${action.type}`)

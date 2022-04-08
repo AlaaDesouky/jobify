@@ -25,7 +25,8 @@ import {
   EDIT_JOB_SUCCESS,
   SHOW_STATS_BEGIN,
   SHOW_STATS_SUCCESS,
-  CLEAR_FILTERS
+  CLEAR_FILTERS,
+  CHANGE_PAGE
 } from './actions'
 import reducer from './reducer'
 import { jobTypeOptions, statusOptions, sortOptions } from '../utils/jobs'
@@ -212,8 +213,8 @@ const AppProvider = ({ children }) => {
 
   // Get Jobs
   const getJobs = async () => {
-    const { search, searchStatus, searchType, sort } = state
-    let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}`
+    const { page, search, searchStatus, searchType, sort } = state
+    let url = `/jobs?page=${page}&status=${searchStatus}&jobType=${searchType}&sort=${sort}`
     if (search) {
       url = `${url}&search=${search}`
     }
@@ -299,6 +300,11 @@ const AppProvider = ({ children }) => {
   const clearFilters = () => {
     dispatch({ type: CLEAR_FILTERS })
   }
+
+  // Change Page
+  const changePage = (page) => {
+    dispatch({ type: CHANGE_PAGE, payload: { page } })
+  }
   return (
     <AppContext.Provider
       value={{
@@ -316,7 +322,8 @@ const AppProvider = ({ children }) => {
         editJob,
         deleteJob,
         showStats,
-        clearFilters
+        clearFilters,
+        changePage
       }}
     >
 

@@ -1,4 +1,4 @@
-import { useReducer, useContext, createContext, useEffect } from 'react'
+import { useReducer, useContext, createContext } from 'react'
 import axios from 'axios'
 import {
   CLEAR_ALERT,

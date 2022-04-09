@@ -1,1 +1,1 @@
-export const apiURL = 'https://ad-jobify-api.herokuapp.com/'
+export const apiURL = 'https://ad-jobify-api.herokuapp.com'

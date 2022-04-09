@@ -132,7 +132,7 @@ const AppProvider = ({ children }) => {
   const setUser = async ({ currentUser, endPoint, alertText }) => {
     dispatch({ type: SET_USER_BEGIN })
     try {
-      const response = await axios.post(`/api/v1/auth/${endPoint}`, currentUser)
+      const response = await axios.post(`${url}/auth/${endPoint}`, currentUser)
       const { user, token, location } = await response.data
       dispatch({ type: SET_USER_SUCCESS, payload: { user, token, location, alertText } })
 

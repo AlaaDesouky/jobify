@@ -30,6 +30,7 @@ import {
 } from './actions'
 import reducer from './reducer'
 import { jobTypeOptions, statusOptions, sortOptions } from '../utils/jobs'
+import { apiURL } from '../utils/url'
 
 // Set data if exist from local storage
 const user = localStorage.getItem('user')
@@ -77,7 +78,8 @@ const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   // Axios setup
-  const authFetch = axios.create({ baseURL: '/api/v1' })
+  let url = process.env.NODE_ENV === 'production' ? `${apiURL}/api/v1` : '/api/v1'
+  const authFetch = axios.create({ baseURL: url })
   authFetch.interceptors.request.use(
     (config) => {
       config.headers.common['Authorization'] = `Bearer ${state.token}`
